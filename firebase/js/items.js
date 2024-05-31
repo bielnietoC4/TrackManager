@@ -1,14 +1,15 @@
-const items = db.collection("items");
+const Competición = db.collection("Competición");
 
 function addItem(doc) {
-    add(items, doc)
+    add(Competición, doc)
         .then(() => {
-            loadItems();
+            loadCompetición();
 
-            document.getElementById("title").value = "";
-            document.getElementById("content").value = "";
+            document.getElementById("nombre").value = nombre;
             document.getElementById("image").value = "";
-            document.getElementById("category").value = "";
+
+
+            
 
             showAlert("Element guardat correctament", "alert-success");
         })
@@ -17,10 +18,12 @@ function addItem(doc) {
         });
 }
 
+loadCompetición();
+
 function deleteItem(id) {
-    deleteById(items, id)
+    deleteById(Competición, id)
         .then(() => {
-            loadItems();
+            loadCompetición();
             showAlert("Element eliminat correctament", "alert-success");
         }).catch(() => {
             showAlert("Error al intentar eliminar l'element", "alert-danger");
@@ -30,47 +33,50 @@ function deleteItem(id) {
 function editItem(id) {
     document.getElementById("elementId").value = id;
     document.getElementById("thumbnail").style.visibility = "visible";
-    selectById(items, id)
+    selectById(Competición, id)
         .then((doc) => {
-            document.getElementById("title").value = doc.data().title;
-            document.getElementById("content").value = doc.data().content;
+            document.getElementById("nombre").value = doc.data().nombre;
             document.getElementById("thumbnail").src = doc.data().image;
-            document.getElementById("category").value = doc.data().category;
         })
         .catch(() => {
             showAlert("Error al intentar editar l'element", "alert-danger");
         });
 }
 
-function loadItems() {
-    selectAll(items)
-        .then((arrayItems) => {
-            document.getElementById("listItems").innerHTML = `<tr>
+function loadCompetición() {
+    selectAll(Competición)
+        .then((arrayCompetición) => {
+            document.getElementById("listCompetición").innerHTML = `<tr>
                                                                 <th></th>
-                                                                <th>Títol</th>
-                                                                <th>Contingut</th>
-                                                                <th>Categoria</th>
-                                                                <th></th>
+                                                                <th>Nombre Competición</th>
+                                                                <th>Categoría</th>
+                                                                <th>Inicio</th>
+                                                                <th>Final</th>
+                                                                <th>Circuitos</th>
+                                                                <th>Equipos</th>
                                                             </tr>`;
-            arrayItems.forEach((doc) => {
+            arrayCompetición.forEach((doc) => {
                 let image = "";
                 if (doc.data().image != null) {
-                    image = `<img src="${doc.data().image}" class="rounded" style="max-width: 100px; max-height: 100px;" "alt="${doc.data().title}">`;
+                    image = `<img src="${doc.data().image}" class="rounded" style="max-width: 100px; max-height: 100px;" "alt="${doc.data().nombre}">`;
                 }
-                document.getElementById("listItems").innerHTML += `<tr>
-                                                                    <td>${image}</td>
-                                                                    <td>${doc.data().title}</td>
-                                                                    <td>${doc.data().content}</td>
-                                                                    <td>${doc.data().category}</td>
-                                                                    <td>
-                                                                        <button type="button" class="btn btn-danger float-right" onclick="eliminar('${doc.id}', '${doc.data().image}')">
-                                                                            Eliminar
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-primary mr-2 float-right" onclick="editItem('${doc.id}')">
-                                                                            Editar
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>`;
+                document.getElementById("listCompetición").innerHTML += `<tr>
+                                                                        <td>${image}</td>
+                                                                        <td>${doc.data().nombre}</td>
+                                                                        <td>${doc.data().category}</td>
+                                                                        <td>${doc.data().inicio}</td>
+                                                                        <td>${doc.data().final}</td>
+                                                                        <td>${doc.data().circuitos}</td>
+                                                                        <td>${doc.data().equipos}</td>
+                                                                        <td>
+                                                                            <button type="button" class="btn btn-danger float-right" onclick="eliminar('${doc.id}', '${doc.data().image}')">
+                                                                                Eliminar
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-primary mr-2 float-right" onclick="editItem('${doc.id}')">
+                                                                                Editar
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>`;
             });
         })
         .catch(() => {
@@ -79,12 +85,12 @@ function loadItems() {
 }
 
 function updateItem(id, doc) {
-    updateById(items, id, doc)
+    updateById(Competición, id, doc)
         .then(() => {
-            loadItems();
+            loadCompetición();
 
             document.getElementById("elementId").value = "";
-            document.getElementById("title").value = "";
+            document.getElementById("nombre").value = "";
             document.getElementById("content").value = "";
             document.getElementById("image").value = "";
             document.getElementById("thumbnail").style.visibility = "hidden";
