@@ -7,6 +7,7 @@ function addItem(doc) {
 
             document.getElementById("nombre").value = nombre;
             document.getElementById("image").value = "";
+            
 
             showAlert("Element guardat correctament", "alert-success");
         })
