@@ -9,22 +9,31 @@ body {
     height: 100vh; 
     margin: 0; 
     padding: 0; 
+    overflow: auto;
 }
 
 .container {
     width: 800px;
+    max-height: 100vh;
     margin: auto; 
-    padding: 40px;
+    padding: 20px;
     background-color: rgba(0, 0, 0, 0.7); 
+    box-sizing: border-box;
+    font-size: 0.9em;
 }
 
 .form-group {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
 }
 
 .form-group input,.form-group select,.form-group textarea {
     width: 100%;
-    padding: 15px;
+    padding: 10px;
     margin-bottom: 20px;
     border: none;
     border-radius: 15px; 
