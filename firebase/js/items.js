@@ -1,22 +1,37 @@
 const Competición = db.collection("Competición");
 
-function addItem(doc) {
-    add(Competición, doc)
-        .then(() => {
-            loadCompetición();
-
-            document.getElementById("nombre").value = nombre;
-            document.getElementById("image").value = "";
-
-
-            
-
-            showAlert("Element guardat correctament", "alert-success");
-        })
-        .catch(() => {
-            showAlert("Error al intentar guardar l'element", "alert-danger");
-        });
-}
+function add(id, doc) {
+    db.collection("Competiciones").doc(id).set(doc)
+      .then(() => {
+        console.log("Element creat correctament");
+        uploadFile(logoFile, id); // upload the file to Firebase Storage
+      })
+      .catch((error) => {
+        console.error("Error al intentar crear l'element:", error);
+      });
+  }
+  
+  // Function to upload the file to Firebase Storage
+  function uploadFile(file, id) {
+    var storageRef = firebase.storage().ref();
+    var fileRef = storageRef.child(`images/Competición/${id}/${file.name}`);
+    fileRef.put(file)
+  .then((snapshot) => {
+    console.log("File uploaded successfully!");
+    // Update the document with the file URL
+    db.collection("Competiciones").doc(id).update({
+      logo: {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        url: snapshot.downloadURL
+      }
+    });
+  })
+  .catch((error) => {
+    console.error("Error uploading file:", error);
+  });
+  }
 
 loadCompetición();
 
@@ -84,20 +99,12 @@ function loadCompetición() {
         });
 }
 
-function updateItem(id, doc) {
-    updateById(Competición, id, doc)
-        .then(() => {
-            loadCompetición();
-
-            document.getElementById("elementId").value = "";
-            document.getElementById("nombre").value = "";
-            document.getElementById("content").value = "";
-            document.getElementById("image").value = "";
-            document.getElementById("thumbnail").style.visibility = "hidden";
-
-            showAlert("Element actualitzat correctament", "alert-success");
-        })
-        .catch(() => {
-            showAlert("Error al intentar actualitzat l'element", "alert-danger");
-        });
-}
+function updateItem(id, data) {
+    db.collection("Competiciones").doc(id).update(data)
+      .then(() => {
+        console.log("Element actualitzat correctament");
+      })
+      .catch((error) => {
+        console.error("Error al intentar actualitzat l'element:", error);
+      });
+  }

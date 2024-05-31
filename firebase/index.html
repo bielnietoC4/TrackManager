@@ -70,46 +70,55 @@
 
 			<div class="col-8 offset-2" id="CompeticiónForm" style="display: none;">
 				<form>
-					<div class="form-group row">
-						<label for="title" class="col-4 col-form-label">Títol:</label>
-						<div class="col-8">
-							<input type="text" class="form-control" id="title">
-						</div>
+				  <div class="form-group row">
+					<label for="elementId" class="col-4 col-form-label">ID del documento:</label>
+					<div class="col-8">
+					  <input type="text" class="form-control" id="elementId">
 					</div>
-					<div class="form-group row">
-						<label for="category" class="col-4 col-form-label">Categoría:</label>
-						<div class="col-8">
-							<select class="form-control" id="category">
-								<option></option>
-								<option></option>
-								<option></option>
-							</select>
-						</div>
+				  </div>
+				  <div class="form-group row">
+					<label for="logo" class="col-4 col-form-label">Logo:</label>
+					<div class="col-8">
+					  <input type="file" class="form-control-file" id="logo">
 					</div>
-					<div class="form-group row">
-						<label for="content" class="col-4 col-form-label">Contingut:</label>
-						<div class="col-8">
-							<input type="text" class="form-control" id="content">
-						</div>
+				  </div>
+				  <div class="form-group row">
+					<label for="categoria" class="col-4 col-form-label">Categoría:</label>
+					<div class="col-8">
+					  <input type="text" class="form-control" id="categoria">
 					</div>
-					<div class="form-group row">
-						<label for="image" class="col-4 col-form-label">Imatge:</label>
-						<div class="col-6">
-							<input type="file" class="form-control-file" id="image">
-						</div>
-						<div class="col-2">
-							<img class="rounded" id="thumbnail"
-								style="max-width: 60px; max-height: 60px; visibility: hidden;" alt="imatge">
-						</div>
+				  </div>
+				  <div class="form-group row">
+					<label for="circuitos" class="col-4 col-form-label">Circuitos:</label>
+					<div class="col-8">
+					  <input type="text" class="form-control" id="circuitos">
 					</div>
-					<div class="form-group row">
-						<div class="offset-4 col-8">
-							<button type="button" id="save" class="btn btn-default float-right">Guardar</button>
-						</div>
+				  </div>
+				  <div class="form-group row">
+					<label for="equipos" class="col-4 col-form-label">Equipos:</label>
+					<div class="col-8">
+					  <input type="text" class="form-control" id="equipos">
 					</div>
-					<input type="hidden" id="elementId">
+				  </div>
+				  <div class="form-group row">
+					<label for="data_inici" class="col-4 col-form-label">Fecha de inicio:</label>
+					<div class="col-8">
+					  <input type="date" class="form-control" id="data_inici">
+					</div>
+				  </div>
+				  <div class="form-group row">
+					<label for="data_fi" class="col-4 col-form-label">Fecha de fin:</label>
+					<div class="col-8">
+					  <input type="date" class="form-control" id="data_fi">
+					</div>
+				  </div>
+				  <div class="form-group row">
+					<div class="offset-4 col-8">
+					  <button type="button" id="guardar" class="btn btn-default float-right">Guardar</button>
+					</div>
+				  </div>
 				</form>
-			</div>
+			  </div>
 
 			<div class="col-2">
 				<div id="alert" role="alert"></div>
@@ -148,8 +157,8 @@
 	}
 
 	window.addEventListener("load", function () {
-		loadCompetición();
-	});
+        loadCompetición();
+    });
 
 	document.getElementById("login").addEventListener("click", function () {
 		let email = document.getElementById("loginEmail").value;
@@ -202,53 +211,76 @@
 		}
 	});
 
-	document.getElementById("save").addEventListener("click", function () {
+	document.getElementById("guardar").addEventListener("click", function() {
 		let id = document.getElementById("elementId").value;
-		let title = document.getElementById("title").value;
-		let content = document.getElementById("content").value;
-		let image = document.getElementById("image").files[0];
+		let categoria = document.getElementById("categoria").value;
+		let circuitos = document.getElementById("circuitos").value;
+		let equipos = document.getElementById("equipos").value;
+		let data_inici = document.getElementById("data_inici").value;
+		let data_fi = document.getElementById("data_fi").value;
+		let logoFile = document.getElementById("logo").files[0]; // get the selected file
+		let logoName = logoFile.name;
+		let logoType = logoFile.type;
+		let logoSize = logoFile.size;
+		
 		let doc = {
-			content: content,
-			title: title
+		  categoria: categoria,
+		  circuitos: circuitos,
+		  equipos: equipos,
+		  data_inici: data_inici,
+		  data_fi: data_fi,
+		  logo: {
+			name: logoName,
+			type: logoType,
+			size: logoSize,
+			url: ''
+		  }
 		};
+		
+		add(id, doc);
+	  });
+	  
+	  //function updateItem(id, doc) {
+		//console.log("Llamando a updateItem con id:", id, "y doc:", doc);
+		//let data = {
+		  //categoria: doc.categoria,
+		  //circuitos: doc.circuitos,
+		  //equips: doc.equips,
+		  //data_inici: doc.data_inici,
+		  //data_fi: doc.data_fi
+		//};
+	  
+		//if (imatgeModificada) {
+		  //let logoFile = doc.logo;
+		  //let logoName = logoFile.name;
+		  //let logoType = logoFile.type;
+		  //let logoSize = logoFile.size;
+	  
+		  //let storageRef = firebase.storage().ref();
+		  //let logoRef = storageRef.child(`/images/Competición${logoName}`);
+	  
+		  //logoRef.put(logoFile)
+			//.then(() => {
+			  //logoRef.getDownloadURL()
+				//.then((url) => {
+				  //data.logo = url;
+				  //updateItem(id, data); // Llama a la función updateItem de items.js
+				//})
+				//.catch((error) => {
+				  //console.error("Error al intentar obtener la URL del logo:", error);
+				//});
+			//})
+			//.catch((error) => {
+			  //console.error("Error al intentar subir el logo:", error);
+			//});
+		//} else {
+		  //updateItem(id, data); // Llama a la función updateItem de items.js
+		//}
+	  //}
 
-		if (id == "") {
-			uploadFile(image)
-				.then((imageUrl) => {
-					doc.image = imageUrl;
-					addItem(doc);
-				})
-				.catch(() => {
-					showAlert("Error al intentar guardar l'element", "alert-danger");
-				});
-		} else {
-			if (imatgeModificada) {
-				let currentImageUrl = document.getElementById("thumbnail").src;
-				deleteFile(currentImageUrl)
-					.then(() => {
-						uploadFile(image)
-							.then((imageUrl) => {
-								doc.image = imageUrl;
-								updateItem(id, doc);
-							})
-							.catch(() => {
-								showAlert("Error al intentar actualitzat l'element", "alert-danger");
-							});
-					})
-					.catch(() => {
-						showAlert("Error al intentar actualitzat l'element", "alert-danger");
-					});
-			} else {
-				updateItem(id, doc);
-			}
-		}
+	
 
-		imatgeModificada = false;
-	});
-
-	document.getElementById("image").addEventListener("change", function () {
-		imatgeModificada = true;
-	});
+	
 
 </script>
 
