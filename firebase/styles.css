@@ -1,8 +1,9 @@
 body {
     font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
     background-image: url('../firebase/imatges/609d793380320.r_d.785-726-0.jpeg'); 
     background-size: cover;
-    color: #f5f5f5;
+    color: white;
     display: flex; 
     justify-content: center; 
     align-items: center; 
@@ -10,6 +11,37 @@ body {
     margin: 0; 
     padding: 0; 
     overflow: auto;
+}
+
+#imagen-derecha {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: 20px;
+    margin-top: 20px;
+    border-radius: 50%;
+    width: 100px; 
+    height: 100px; 
+}
+
+button {
+    background-color: #FF0000; 
+    border: none; 
+    color: #FFFFFF; 
+    padding: 15px 32px; 
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px; 
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px; 
+    font-family: 'Courier New', Courier, monospace;
+
+}
+
+button:hover {
+    background-color: black; 
 }
 
 .container {
@@ -39,6 +71,7 @@ body {
     border-radius: 15px; 
     background-color: rgba(255, 255, 255, 0.2);
     color: #fff;
+    font-family: 'Courier New', Courier, monospace; 
 }
 
 .form-group button[type="submit"] {
