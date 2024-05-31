@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Items</title>
+	<title>TrackManager</title>
 	<link rel="stylesheet" href="styles.css">
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -68,7 +68,7 @@
 				</form>
 			</div>
 
-			<div class="col-8 offset-2" id="itemsForm" style="display: none;">
+			<div class="col-8 offset-2" id="CompeticiónForm" style="display: none;">
 				<form>
 					<div class="form-group row">
 						<label for="title" class="col-4 col-form-label">Títol:</label>
@@ -116,7 +116,7 @@
 			</div>
 		</div>
 		<div class="table-responsive">
-			<table class="table table-hover" id="listItems" style="display: none;">
+			<table class="table table-hover" id="listCompetición" style="display: none;">
 			</table>
 		</div>
 	</div>
@@ -148,7 +148,7 @@
 	}
 
 	window.addEventListener("load", function () {
-		loadItems();
+		loadCompetición();
 	});
 
 	document.getElementById("login").addEventListener("click", function () {
@@ -160,8 +160,8 @@
 				showAlert("Usuari autenticat", "alert-success");
 
 				document.getElementById("loginForm").style.display = "none";
-				document.getElementById("itemsForm").style.display = "block";
-				document.getElementById("listItems").style.display = "table";
+				document.getElementById("CompeticiónForm").style.display = "block";
+				document.getElementById("listCompetición").style.display = "table";
 			})
 			.catch(function (error) {
 				showAlert("Error d’autenticació", "alert-danger");
