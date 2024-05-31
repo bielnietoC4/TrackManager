@@ -1,25 +1,42 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #121212;
+    font-family: 'Courier New', Courier, monospace;
+    background-image: url('../firebase/imatges/609d793380320.r_d.785-726-0.jpeg'); 
+    background-size: cover;
     color: #f5f5f5;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    margin: 0; 
+    padding: 0; 
+    overflow: auto;
 }
 
 .container {
-    max-width: 800px;
-    margin: 0 auto;
+    width: 800px;
+    max-height: 100vh;
+    margin: auto; 
     padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7); 
+    box-sizing: border-box;
+    font-size: 0.9em;
 }
 
 .form-group {
     margin-bottom: 20px;
 }
 
-.formgroup input,.form-group select,.form-group textarea {
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input,.form-group select,.form-group textarea {
     width: 100%;
     padding: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 15px; 
     background-color: rgba(255, 255, 255, 0.2);
     color: #fff;
 }
@@ -28,14 +45,16 @@ body {
     width: 100%;
     padding: 10px;
     border: none;
-    border-radius: 5px;
-    background-color: #ff0000;
+    border-radius: 50px; 
+    background-color: #1abc9c; 
     color: #fff;
     cursor: pointer;
+    transition: background-color 0.3s ease; 
+    margin-top: 20px;
 }
 
 .form-group button[type="submit"]:hover {
-    background-color: #b30000;
+    background-color: #16a085; 
 }
 
 .table {
@@ -72,9 +91,13 @@ body {
 }
 
 .alert-success {
-    background-color: #00ff00;
+    background-color: #2ecc71; 
 }
 
 .alert-danger {
-    background-color: #ff0000;
+    background-color: #e74c3c; 
+}
+
+.container > * {
+    text-align: center;
 }
