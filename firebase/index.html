@@ -246,9 +246,6 @@
 		let data_inici = document.getElementById("data_inici").value;
 		let data_fi = document.getElementById("data_fi").value;
 		let logoFile = document.getElementById("logo").files[0]; // get the selected file
-		let logoName = logoFile.name;
-		let logoType = logoFile.type;
-		let logoSize = logoFile.size;
 		
 		let doc = {
 		  categoria: categoria,
@@ -257,16 +254,19 @@
 		  data_inici: data_inici,
 		  data_fi: data_fi,
 		  logo: {
-			name: logoName,
-			type: logoType,
-			size: logoSize,
+			name: logoFile.name,
+			type: logoFile.type,
+			size: logoFile.size,
 			url: ''
 		  }
 		};
 		
 		add(id, doc);
 		
-		// Limpiar valores de los inputs
+		uploadFile(logoFile); // pass the logoFile as a parameter
+
+		updateItem(id, doc, imatgeModificada); // pass the imatgeModificada as a parameter
+
 		document.getElementById("elementId").value = "";
 		document.getElementById("categoria").value = "";
 		document.getElementById("circuitos").value = "";
@@ -327,8 +327,7 @@
 		document.getElementById("logo").value = "";
 	  });
 
-	
-
+	  
 </script>
 
 </html>

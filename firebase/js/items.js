@@ -1,7 +1,8 @@
 const Competición = db.collection("Competición");
 
 function add(id, doc) {
-  db.collection("Competición").doc(id).set(doc)
+  db.collection("Competición").doc(id).set(doc);
+  loadCompetición()
    .then(() => {
       console.log("Element creat correctament");
       uploadFile(logoFile, id); // upload the file to Firebase Storage
@@ -17,8 +18,8 @@ function add(id, doc) {
     var storageRef = firebase.storage().ref();
     var fileRef = storageRef.child(`images/Competición/${id}/${file.name}`);
     fileRef.put(file)
-     .then((snapshot) => {
-        console.log("File uploaded successfully!");
+      .then((snapshot) => {
+        console.log("Archivo subido correctamente");
         // Update the document with the file URL
         db.collection("Competición").doc(id).update({
           logo: {
@@ -29,44 +30,21 @@ function add(id, doc) {
           }
         });
       })
-     .catch((error) => {
-        console.error("Error uploading file:", error);
+      .catch((error) => {
+        console.error("Error al subir archivo:", error);
       });
   }
 
 loadCompetición();
 
 function deleteItem(id) {
-  db.collection("Competición").doc(id).get()
-   .then((doc) => {
-      if (doc.exists) {
-        // Eliminar archivo asociado en el Storage
-        var storageRef = firebase.storage().ref();
-        var fileRef = storageRef.child(`images/Competición/${id}/${doc.data().logo.name}`);
-        fileRef.delete()
-         .then(() => {
-            console.log("File deleted successfully!");
-         })
-         .catch((error) => {
-            console.error("Error deleting file:", error);
-         });
-        
-        // Eliminar elemento en la base de datos
-        doc.ref.delete()
-         .then(() => {
-            console.log("Element deleted successfully!");
-            loadCompetición(); // reload the data
-         })
-         .catch((error) => {
-            console.error("Error deleting element:", error);
-         });
-      } else {
-        console.log("Element not found!");
-      }
-   })
-   .catch((error) => {
-      console.error("Error getting element:", error);
-   });
+  db.collection("Competición").doc(id).delete()
+    .then(() => {
+      console.log("Elemento eliminado correctamente");
+    })
+    .catch((error) => {
+      console.error("Error al eliminar elemento:", error);
+    });
 }
 
 function editItem(id) {
@@ -83,53 +61,75 @@ function editItem(id) {
 }
 
 function loadCompetición() {
-  selectAll(Competición)
-      .then((arrayCompetición) => {
-          let tableBody = "";
-          arrayCompetición.forEach((doc) => {
-              let image = "";
-              if (doc.data().logo && doc.data().logo.url) {
-                  image = `<img src="${doc.data().logo.url}" class="rounded" style="max-width: 100px; max-height: 100px;" alt="${doc.data().nombre}">`;
-              }
-              tableBody += `<tr>
-                              <td>${image}</td>
-                              <td>${doc.data().categoria}</td>
-                              <td>${doc.data().circuitos}</td>
-                              <td>${doc.data().equipos}</td>
-                              <td>${doc.data().data_inici}</td>
-                              <td>${doc.data().data_fi}</td>
-                              <td>
-                                  <button type="button" class="btn btn-danger float-right" onclick="eliminar('${doc.id}', '${doc.data().logo.url}')">
-                                      Eliminar
-                                  </button>
-                                  <button type="button" class="btn btn-primary mr-2 float-right" onclick="editItem('${doc.id}')">
-                                      Editar
-                                  </button>
-                              </td>
-                          </tr>`;
-          });
-          document.getElementById("listCompetición").innerHTML = `<tr>
-                                                                  <th></th>
-                                                                  <th>Categoría</th>
-                                                                  <th>Circuitos</th>
-                                                                  <th>Equipos</th>
-                                                                  <th>Inicio</th>
-                                                                  <th>Final</th>
-                                                                  <th>Acciones</th>
-                                                              </tr>`;
-          document.getElementById("listCompetición").insertAdjacentHTML("beforeend", tableBody);
-      })
-      .catch(() => {
-          showAlert("Error al mostrar els elements", "alert-danger");
-      });
+  db.collection("Competición").onSnapshot((querySnapshot) => {
+    let tableHtml = `
+      <tr>
+        <th>Logo</th>
+        <th>Nombre</th>
+        <th>Categoria</th>
+        <th>Circuitos</th>
+        <th>Equipos</th>
+        <th>Fecha de inicio</th>
+        <th>Fecha de fin</th>
+        <th>Acciones</th>
+      </tr>
+    `;
+    querySnapshot.forEach((doc) => {
+      let nombreCompeticion = doc.id;
+      let row = `
+        <tr>
+          <td><img src="${doc.data().logo.url}" width="50" height="50"></td>
+          <td>${nombreCompeticion}</td>
+          <td>${doc.data().categoria}</td>
+          <td>${doc.data().circuitos}</td>
+          <td>${doc.data().equipos}</td>
+          <td>${doc.data().data_inici}</td>
+          <td>${doc.data().data_fi}</td>
+          <td>
+            <button class="btn btn-danger" onclick="deleteItem('${doc.id}')">Eliminar</button>
+            <button class="btn btn-primary" onclick="editItem('${doc.id}', ${JSON.stringify(doc.data())})">Editar</button>
+          </td>
+        </tr>
+      `;
+      tableHtml += row;
+    });
+    let tableResponsive = document.querySelector(".table-responsive");
+    let table = tableResponsive.querySelector("table");
+    if (!table.querySelector("tbody")) {
+      let tbody = document.createElement("tbody");
+      table.appendChild(tbody);
+    }
+    table.querySelector("tbody").innerHTML = tableHtml;
+  });
 }
 
-function updateItem(id, data) {
-    db.collection("Competición").doc(id).update(data)
+function updateItem(id, doc, imatgeModificada) {
+  if (imatgeModificada) {
+    let logoFile = doc.logo;
+    let logoName = logoFile.name;
+    let logoType = logoFile.type;
+    let logoSize = logoFile.size;
+    
+    let storageRef = firebase.storage().ref();
+    let logoRef = storageRef.child(`/images/Competición${logoName}`);
+    
+    logoRef.put(logoFile)
       .then(() => {
-        console.log("Element actualitzat correctament");
+        logoRef.getDownloadURL()
+          .then((url) => {
+            data.logo = url;
+            updateItem(id, data); // Llama a la función updateItem de items.js
+            loadCompetición();
+          })
+          .catch((error) => {
+            console.error("Error al intentar obtener la URL del logo:", error);
+          });
       })
       .catch((error) => {
-        console.error("Error al intentar actualitzat l'element:", error);
+        console.error("Error al intentar subir el logo:", error);
       });
+  } else {
+    updateItem(id, data); // Llama a la función updateItem de items.js
   }
+}
+
