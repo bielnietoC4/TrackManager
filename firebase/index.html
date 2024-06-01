@@ -141,14 +141,38 @@
 
 	let imatgeModificada = false;
 
-	function eliminar(itemId, imageUrl) {
-		deleteFile(imageUrl)
-			.then(() => {
-				deleteItem(itemId);
-			}).catch(() => {
-				showAlert("Error al intentar eliminar la imatge", "alert-danger");
-			});
-	}
+	function deleteItem(id) {
+		db.collection("Competición").doc(id).get()
+		 .then((doc) => {
+			if (doc.exists) {
+			  // Eliminar archivo asociado en el Storage
+			  var storageRef = firebase.storage().ref();
+			  var fileRef = storageRef.child(`images/Competición/${id}/${doc.data().logo.name}`);
+			  fileRef.delete()
+			   .then(() => {
+				  console.log("File deleted successfully!");
+			   })
+			   .catch((error) => {
+				  console.error("Error deleting file:", error);
+			   });
+			  
+			  // Eliminar elemento en la base de datos
+			  doc.ref.delete()
+			   .then(() => {
+				  console.log("Element deleted successfully!");
+				  loadCompetición(); // reload the data
+			   })
+			   .catch((error) => {
+				  console.error("Error deleting element:", error);
+			   });
+			} else {
+			  console.log("Element not found!");
+			}
+		 })
+		 .catch((error) => {
+			console.error("Error getting element:", error);
+		 });
+	  }
 
 	function showAlert(text, type) {
 		document.getElementById("alert").innerText = text;
@@ -241,47 +265,67 @@
 		};
 		
 		add(id, doc);
+		
+		// Limpiar valores de los inputs
+		document.getElementById("elementId").value = "";
+		document.getElementById("categoria").value = "";
+		document.getElementById("circuitos").value = "";
+		document.getElementById("equipos").value = "";
+		document.getElementById("data_inici").value = "";
+		document.getElementById("data_fi").value = "";
+		document.getElementById("logo").value = "";
 	  });
 
-	  //function updateItem(id, doc) {
-		//console.log("Llamando a updateItem con id:", id, "y doc:", doc);
-		//let data = {
-		  //categoria: doc.categoria,
-		  //circuitos: doc.circuitos,
-		  //equips: doc.equips,
-		  //data_inici: doc.data_inici,
-		  //data_fi: doc.data_fi
-		//};
+	  function updateItem(id, doc) {
+		console.log("Llamando a updateItem con id:", id, "y doc:", doc);
+		let data = {
+		  categoria: doc.categoria,
+		  circuitos: doc.circuitos,
+		  equips: doc.equips,
+		  data_inici: doc.data_inici,
+		  data_fi: doc.data_fi
+		};
 	  
-		//if (imatgeModificada) {
-		  //let logoFile = doc.logo;
-		  //let logoName = logoFile.name;
-		  //let logoType = logoFile.type;
-		  //let logoSize = logoFile.size;
+		if (imatgeModificada) {
+		  let logoFile = doc.logo;
+		  let logoName = logoFile.name;
+		  let logoType = logoFile.type;
+		  let logoSize = logoFile.size;
 	  
-		  //let storageRef = firebase.storage().ref();
-		  //let logoRef = storageRef.child(`/images/Competición${logoName}`);
+		  let storageRef = firebase.storage().ref();
+		  let logoRef = storageRef.child(`/images/Competición${logoName}`);
 	  
-		  //logoRef.put(logoFile)
-			//.then(() => {
-			  //logoRef.getDownloadURL()
-				//.then((url) => {
-				  //data.logo = url;
-				  //updateItem(id, data); // Llama a la función updateItem de items.js
-				//})
-				//.catch((error) => {
-				  //console.error("Error al intentar obtener la URL del logo:", error);
-				//});
-			//})
-			//.catch((error) => {
-			  //console.error("Error al intentar subir el logo:", error);
-			//});
-		//} else {
-		  //updateItem(id, data); // Llama a la función updateItem de items.js
-		//}
-	  //}
+		  logoRef.put(logoFile)
+			.then(() => {
+			  logoRef.getDownloadURL()
+				.then((url) => {
+				  data.logo = url;
+				  updateItem(id, data); // Llama a la función updateItem de items.js
+				})
+				.catch((error) => {
+				  console.error("Error al intentar obtener la URL del logo:", error);
+				});
+			})
+			.catch((error) => {
+			  console.error("Error al intentar subir el logo:", error);
+			});
+		} else {
+		  updateItem(id, data); // Llama a la función updateItem de items.js
+		}
+	  }
 
-	
+	  document.getElementById("eliminar").addEventListener("click", function() {
+		let id = document.getElementById("elementId").value;
+		deleteItem(id);
+		// Limpiar valores de los inputs
+		document.getElementById("elementId").value = "";
+		document.getElementById("categoria").value = "";
+		document.getElementById("circuitos").value = "";
+		document.getElementById("equipos").value = "";
+		document.getElementById("data_inici").value = "";
+		document.getElementById("data_fi").value = "";
+		document.getElementById("logo").value = "";
+	  });
 
 	
 
