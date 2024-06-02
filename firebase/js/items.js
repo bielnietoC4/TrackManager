@@ -14,26 +14,38 @@ function add(id, doc) {
 }
   
   // Function to upload the file to Firebase Storage
-  function uploadFile(file, id) {
-    var storageRef = firebase.storage().ref();
-    var fileRef = storageRef.child(`images/Competición/${id}/${file.name}`);
-    fileRef.put(file)
-      .then((snapshot) => {
-        console.log("Archivo subido correctamente");
-        // Update the document with the file URL
-        db.collection("Competición").doc(id).update({
-          logo: {
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            url: snapshot.downloadURL
-          }
+  function uploadFile(logoFile, id) {
+    let storageRef = firebase.storage().ref();
+    let logoRef = storageRef.child(`logoFile/images/Competición/undefined/${logoFile.name}`);
+    logoRef.put(logoFile)
+        .then(() => {
+            logoRef.getDownloadURL()
+                .then((url) => {
+                    updateLogoUrl(id, url); // update the logo URL in Firestore
+                })
+                .catch((error) => {
+                    console.error("Error al intentar obtener la URL del logo:", error);
+                });
+        })
+        .catch((error) => {
+            console.error("Error al intentar subir el logo:", error);
         });
-      })
-      .catch((error) => {
-        console.error("Error al subir archivo:", error);
-      });
-  }
+}
+
+function updateLogoUrl(id, url) {
+    let docRef = db.collection("Competición").doc(id);
+    docRef.update({
+        logo: {
+            url: url
+        }
+    })
+        .then(() => {
+            console.log("Logo URL actualizada correctamente");
+        })
+        .catch((error) => {
+            console.error("Error al actualizar la URL del logo:", error);
+        });
+}
 
 loadCompetición();
 
@@ -47,17 +59,68 @@ function deleteItem(id) {
     });
 }
 
-function editItem(id) {
-    document.getElementById("elementId").value = id;
-    document.getElementById("thumbnail").style.visibility = "visible";
-    selectById(Competición, id)
-        .then((doc) => {
-            document.getElementById("nombre").value = doc.data().nombre;
-            document.getElementById("thumbnail").src = doc.data().image;
-        })
-        .catch(() => {
-            showAlert("Error al intentar editar l'element", "alert-danger");
-        });
+function editItem(id, data) {
+  let editContainer = document.getElementById("editContainer");
+  editContainer.style.display = "block";
+  
+  let formHtml = `
+    <form id="editForm">
+      <div class="form-group">
+        <label for="logo">Logo</label>
+        <input type="text" class="form-control" id="logo" value="${data.logo.url}">
+      </div>
+      <div class="form-group">
+        <label for="categoria">Categoría</label>
+        <input type="text" class="form-control" id="categoria" value="${data.categoria}">
+      </div>
+      <div class="form-group">
+        <label for="circuitos">Circuitos</label>
+        <input type="text" class="form-control" id="circuitos" value="${data.circuitos}">
+      </div>
+      <div class="form-group">
+        <label for="equipos">Equipos</label>
+        <input type="text" class="form-control" id="equipos" value="${data.equipos}">
+      </div>
+      <div class="form-group">
+        <label for="data_inici">Fecha de inicio</label>
+        <input type="date" class="form-control" id="data_inici" value="${data.data_inici}">
+      </div>
+      <div class="form-group">
+        <label for="data_fi">Fecha de fin</label>
+        <input type="date" class="form-control" id="data_fi" value="${data.data_fi}">
+      </div>
+      <button type="button" id="updateButton" class="btn btn-primary">Actualizar</button>
+      <button type="button" id="cancelButton" class="btn btn-default">Cancelar</button>
+    </form>
+  `;
+  
+  editContainer.innerHTML = formHtml;
+  
+  document.getElementById("updateButton").addEventListener("click", function() {
+    // Actualiza la competición en la base de datos
+    db.collection("Competición").doc(id).update({
+     logo: { url: document.getElementById("logo").value },
+      categoria: document.getElementById("categoria").value,
+      circuitos: document.getElementById("circuitos").value,
+      equipos: document.getElementById("equipos").value,
+      data_inici: document.getElementById("data_inici").value,
+      data_fi: document.getElementById("data_fi").value
+    })
+   .then(function() {
+      // Oculta el formulario de edición
+      editContainer.style.display = "none";
+      // Actualiza la tabla de competiciones
+      loadCompetición();
+    })
+   .catch(function(error) {
+      console.error("Error actualizando competición:", error);
+    });
+  });
+  
+  document.getElementById("cancelButton").addEventListener("click", function() {
+    // Oculta el formulario de edición
+    editContainer.style.display = "none";
+  });
 }
 
 function loadCompetición() {
@@ -87,7 +150,7 @@ function loadCompetición() {
           <td>${doc.data().data_fi}</td>
           <td>
             <button class="btn btn-danger" onclick="deleteItem('${doc.id}')">Eliminar</button>
-            <button class="btn btn-primary" onclick="editItem('${doc.id}', ${JSON.stringify(doc.data())})">Editar</button>
+            <button type="button" class="btn btn-primary mr-2 float-right" onclick="editItem('${doc.id}')">Editar</button>
           </td>
         </tr>
       `;
@@ -101,6 +164,12 @@ function loadCompetición() {
     }
     table.querySelector("tbody").innerHTML = tableHtml;
   });
+}
+
+function getEditFunction(id, data) {
+  return function() {
+    editItem(id, data);
+  };
 }
 
 function updateItem(id, doc, imatgeModificada) {

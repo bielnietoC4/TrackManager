@@ -68,6 +68,11 @@
 				</form>
 			</div>
 
+			<div class="col-8 offset-2" id="buttonsContainer" style="display: none;">
+				<button type="button" id="addCompetición" class="btn btn-default">Agregar Competición</button>
+				<button type="button" id="searchCompetición" class="btn btn-default">Buscar Competición</button>
+			  </div>
+
 			<div class="col-8 offset-2" id="CompeticiónForm" style="display: none;">
 				<form>
 				  <div class="form-group row">
@@ -86,6 +91,7 @@
 					<label for="categoria" class="col-4 col-form-label">Categoría:</label>
 					<div class="col-8">
 						<select class="form-control" id="categoria">
+							<option>Selecciona</option>
 							<option value="Coches">Coches</option>
 							<option value="Motos">Motos</option>
 						</select>
@@ -130,6 +136,28 @@
 		<div class="table-responsive">
 			<table class="table table-hover" id="listCompetición" style="display: none;">
 			</table>
+		</div>
+		<div id="edit-form" style="display: none;">
+			<form>
+			  <label for="id">Nombre de la competición:</label>
+			  <input type="text" id="elementId" name="elementId" readonly><br><br>
+			  <label for="categoria">Categoria:</label>
+			  <select id="categoria">
+				<option>Selecciona</option>
+				<option value="Coches">Coches</option>
+				<option value="Motos">Motos</option>
+			</select><br><br>
+			  <label for="circuitos">Circuitos:</label>
+			  <input type="text" id="circuitos" name="circuitos"><br><br>
+			  <label for="equipos">Equipos:</label>
+			  <input type="text" id="equipos" name="equipos"><br><br>
+			  <label for="data_inici">Fecha de inicio:</label>
+			  <input type="date" id="data_inici" name="data_inici"><br><br>
+			  <label for="data_fi">Fecha de fin:</label>
+			  <input type="date" id="data_fi" name="data_fi"><br><br>
+			  <button class="btn btn-primary" onclick="updateItem()">Actualizar</button>
+			</form>
+		  </div>
 		</div>
 	</div>
 </body>
@@ -190,19 +218,18 @@
 	document.getElementById("login").addEventListener("click", function () {
 		let email = document.getElementById("loginEmail").value;
 		let password = document.getElementById("loginPassword").value;
-
+	  
 		auth.signInWithEmailAndPassword(email, password)
-			.then(function () {
-				showAlert("Usuari autenticat", "alert-success");
-
-				document.getElementById("loginForm").style.display = "none";
-				document.getElementById("CompeticiónForm").style.display = "block";
-				document.getElementById("listCompetición").style.display = "table";
-			})
-			.catch(function (error) {
-				showAlert("Error d’autenticació", "alert-danger");
-			});
-	});
+		 .then(function () {
+			showAlert("Usuari autenticat", "alert-success");
+	  
+			document.getElementById("loginForm").style.display = "none";
+			document.getElementById("buttonsContainer").style.display = "block";
+		  })
+		 .catch(function (error) {
+			showAlert("Error d’autenticació", "alert-danger");
+		  });
+	  });
 
 	document.getElementById("newUser").addEventListener("click", function () {
 		document.getElementById("loginForm").style.display = "none";
@@ -238,43 +265,58 @@
 		}
 	});
 
-	document.getElementById("guardar").addEventListener("click", function() {
-		let id = document.getElementById("elementId").value;
-		let categoria = document.getElementById("categoria").value;
-		let circuitos = document.getElementById("circuitos").value;
-		let equipos = document.getElementById("equipos").value;
-		let data_inici = document.getElementById("data_inici").value;
-		let data_fi = document.getElementById("data_fi").value;
-		let logoFile = document.getElementById("logo").files[0]; // get the selected file
-		
-		let doc = {
-		  categoria: categoria,
-		  circuitos: circuitos,
-		  equipos: equipos,
-		  data_inici: data_inici,
-		  data_fi: data_fi,
-		  logo: {
-			name: logoFile.name,
-			type: logoFile.type,
-			size: logoFile.size,
-			url: ''
-		  }
-		};
-		
-		add(id, doc);
-		
-		uploadFile(logoFile); // pass the logoFile as a parameter
-
-		updateItem(id, doc, imatgeModificada); // pass the imatgeModificada as a parameter
-
-		document.getElementById("elementId").value = "";
-		document.getElementById("categoria").value = "";
-		document.getElementById("circuitos").value = "";
-		document.getElementById("equipos").value = "";
-		document.getElementById("data_inici").value = "";
-		document.getElementById("data_fi").value = "";
-		document.getElementById("logo").value = "";
+	document.getElementById("addCompetición").addEventListener("click", function () {
+		document.getElementById("CompeticiónForm").style.display = "block";
+		document.getElementById("listCompetición").style.display = "block";
 	  });
+
+	function clearInputs() {
+		const inputs = document.querySelectorAll('input, select');
+		inputs.forEach(input => {
+		  if (input.type === 'text' || input.type === 'date') {
+			input.value = '';
+		  } else if (input.type === 'file') {
+			input.value = '';
+			// También puedes utilizar la propiedad files para limpiar la selección de archivos
+			input.files = [];
+		  } else if (input.type === 'elect-one' || input.type === 'elect-multiple') {
+			input.selectedIndex = -1;
+		  }
+		});
+	  }
+
+	  document.getElementById("guardar").addEventListener("click", function() {
+        let id = document.getElementById("elementId").value;
+        let categoria = document.getElementById("categoria").value;
+        let circuitos = document.getElementById("circuitos").value;
+        let equipos = document.getElementById("equipos").value;
+        let data_inici = document.getElementById("data_inici").value;
+        let data_fi = document.getElementById("data_fi").value;
+        let logoFile = document.getElementById("logo").files[0]; // get the selected file
+
+        let doc = {
+            categoria: categoria,
+            circuitos: circuitos,
+            equipos: equipos,
+            data_inici: data_inici,
+            data_fi: data_fi,
+            logo: {
+                name: logoFile.name,
+                type: logoFile.type,
+                size: logoFile.size,
+                url: ''
+            }
+        };
+
+        add(id, doc);
+
+        uploadFile(logoFile, id); // pass the logoFile and id as parameters
+
+        clearInputs(); // clear the form inputs
+
+        updateItem(id, doc, imatgeModificada); // pass the imatgeModificada as a parameter
+    });
+
 
 	  function updateItem(id, doc) {
 		console.log("Llamando a updateItem con id:", id, "y doc:", doc);
