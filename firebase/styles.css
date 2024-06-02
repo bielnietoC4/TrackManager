@@ -134,3 +134,7 @@ button:hover {
 .container > * {
     text-align: center;
 }
+
+#editContainer {
+    display: block;
+}

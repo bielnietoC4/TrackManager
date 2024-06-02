@@ -124,6 +124,7 @@
 				  <div class="form-group row">
 					<div class="offset-4 col-8">
 					  <button type="button" id="guardar" class="btn btn-default float-right">Guardar</button>
+					  <button hidden type="button" id="updateButton"  class="btn btn-default float-right">Actualizar</button>
 					</div>
 				  </div>
 				</form>
@@ -137,7 +138,7 @@
 			<table class="table table-hover" id="listCompetición" style="display: none;">
 			</table>
 		</div>
-		<div id="edit-form" style="display: none;">
+		<div id="editContainer" style="display: none;">
 			<form>
 			  <label for="id">Nombre de la competición:</label>
 			  <input type="text" id="elementId" name="elementId" readonly><br><br>
@@ -165,211 +166,6 @@
 <script language="javascript" src="js/firestore.js"></script>
 <script language="javascript" src="js/storage.js"></script>
 <script language="javascript" src="js/items.js"></script>
-<script language="javascript">
-
-	let imatgeModificada = false;
-
-	function deleteItem(id) {
-		db.collection("Competición").doc(id).get()
-		 .then((doc) => {
-			if (doc.exists) {
-			  // Eliminar archivo asociado en el Storage
-			  var storageRef = firebase.storage().ref();
-			  var fileRef = storageRef.child(`images/Competición/${id}/${doc.data().logo.name}`);
-			  fileRef.delete()
-			   .then(() => {
-				  console.log("File deleted successfully!");
-			   })
-			   .catch((error) => {
-				  console.error("Error deleting file:", error);
-			   });
-			  
-			  // Eliminar elemento en la base de datos
-			  doc.ref.delete()
-			   .then(() => {
-				  console.log("Element deleted successfully!");
-				  loadCompetición(); // reload the data
-			   })
-			   .catch((error) => {
-				  console.error("Error deleting element:", error);
-			   });
-			} else {
-			  console.log("Element not found!");
-			}
-		 })
-		 .catch((error) => {
-			console.error("Error getting element:", error);
-		 });
-	  }
-
-	function showAlert(text, type) {
-		document.getElementById("alert").innerText = text;
-		document.getElementById("alert").className = "alert " + type;
-		document.getElementById("alert").style.display = "block";
-		window.setTimeout(function () {
-			document.getElementById("alert").style.display = "none";
-		}, 2000);
-	}
-
-	window.addEventListener("load", function () {
-        loadCompetición();
-    });
-
-	document.getElementById("login").addEventListener("click", function () {
-		let email = document.getElementById("loginEmail").value;
-		let password = document.getElementById("loginPassword").value;
-	  
-		auth.signInWithEmailAndPassword(email, password)
-		 .then(function () {
-			showAlert("Usuari autenticat", "alert-success");
-	  
-			document.getElementById("loginForm").style.display = "none";
-			document.getElementById("buttonsContainer").style.display = "block";
-		  })
-		 .catch(function (error) {
-			showAlert("Error d’autenticació", "alert-danger");
-		  });
-	  });
-
-	document.getElementById("newUser").addEventListener("click", function () {
-		document.getElementById("loginForm").style.display = "none";
-		document.getElementById("signupForm").style.display = "block";
-	});
-
-	document.getElementById("signup").addEventListener("click", function () {
-		let email = document.getElementById("signupEmail").value;
-		let password = document.getElementById("signupPassword").value;
-		let passwordConfirm = document.getElementById("signupPasswordConfirm").value;
-
-		if (email.length > 0 && email.indexOf("@") > 1) {
-			if (password.length > 0) {
-				if (password == passwordConfirm) {
-					auth.createUserWithEmailAndPassword(email, password)
-						.then(function () {
-							showAlert("Usuari creat correctament", "alert-success");
-
-							document.getElementById("loginForm").style.display = "block";
-							document.getElementById("signupForm").style.display = "none";
-						})
-						.catch(function (error) {
-							showAlert("Error al intentar crear l'usuari", "alert-danger");
-						});
-				} else {
-					showAlert("Les contrasenyes no coincideixen", "alert-danger");
-				}
-			} else {
-				showAlert("La contrasenya és obligatòria", "alert-danger");
-			}
-		} else {
-			showAlert("Email incorrecte", "alert-danger");
-		}
-	});
-
-	document.getElementById("addCompetición").addEventListener("click", function () {
-		document.getElementById("CompeticiónForm").style.display = "block";
-		document.getElementById("listCompetición").style.display = "block";
-	  });
-
-	function clearInputs() {
-		const inputs = document.querySelectorAll('input, select');
-		inputs.forEach(input => {
-		  if (input.type === 'text' || input.type === 'date') {
-			input.value = '';
-		  } else if (input.type === 'file') {
-			input.value = '';
-			// También puedes utilizar la propiedad files para limpiar la selección de archivos
-			input.files = [];
-		  } else if (input.type === 'elect-one' || input.type === 'elect-multiple') {
-			input.selectedIndex = -1;
-		  }
-		});
-	  }
-
-	  document.getElementById("guardar").addEventListener("click", function() {
-        let id = document.getElementById("elementId").value;
-        let categoria = document.getElementById("categoria").value;
-        let circuitos = document.getElementById("circuitos").value;
-        let equipos = document.getElementById("equipos").value;
-        let data_inici = document.getElementById("data_inici").value;
-        let data_fi = document.getElementById("data_fi").value;
-        let logoFile = document.getElementById("logo").files[0]; // get the selected file
-
-        let doc = {
-            categoria: categoria,
-            circuitos: circuitos,
-            equipos: equipos,
-            data_inici: data_inici,
-            data_fi: data_fi,
-            logo: {
-                name: logoFile.name,
-                type: logoFile.type,
-                size: logoFile.size,
-                url: ''
-            }
-        };
-
-        add(id, doc);
-
-        uploadFile(logoFile, id); // pass the logoFile and id as parameters
-
-        clearInputs(); // clear the form inputs
-
-        updateItem(id, doc, imatgeModificada); // pass the imatgeModificada as a parameter
-    });
-
-
-	  function updateItem(id, doc) {
-		console.log("Llamando a updateItem con id:", id, "y doc:", doc);
-		let data = {
-		  categoria: doc.categoria,
-		  circuitos: doc.circuitos,
-		  equips: doc.equips,
-		  data_inici: doc.data_inici,
-		  data_fi: doc.data_fi
-		};
-	  
-		if (imatgeModificada) {
-		  let logoFile = doc.logo;
-		  let logoName = logoFile.name;
-		  let logoType = logoFile.type;
-		  let logoSize = logoFile.size;
-	  
-		  let storageRef = firebase.storage().ref();
-		  let logoRef = storageRef.child(`/images/Competición${logoName}`);
-	  
-		  logoRef.put(logoFile)
-			.then(() => {
-			  logoRef.getDownloadURL()
-				.then((url) => {
-				  data.logo = url;
-				  updateItem(id, data); // Llama a la función updateItem de items.js
-				})
-				.catch((error) => {
-				  console.error("Error al intentar obtener la URL del logo:", error);
-				});
-			})
-			.catch((error) => {
-			  console.error("Error al intentar subir el logo:", error);
-			});
-		} else {
-		  updateItem(id, data); // Llama a la función updateItem de items.js
-		}
-	  }
-
-	  document.getElementById("eliminar").addEventListener("click", function() {
-		let id = document.getElementById("elementId").value;
-		deleteItem(id);
-		// Limpiar valores de los inputs
-		document.getElementById("elementId").value = "";
-		document.getElementById("categoria").value = "";
-		document.getElementById("circuitos").value = "";
-		document.getElementById("equipos").value = "";
-		document.getElementById("data_inici").value = "";
-		document.getElementById("data_fi").value = "";
-		document.getElementById("logo").value = "";
-	  });
-
-	  
-</script>
+<script language="javascript" src="js/scripts.js" ></script>
 
 </html>
