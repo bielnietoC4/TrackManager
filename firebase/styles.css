@@ -1,93 +1,79 @@
 body {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Montserrat', sans-serif;
     font-weight: bold;
-    background-image: url('../firebase/imatges/609d793380320.r_d.785-726-0.jpeg'); 
-    background-size: cover;
-    color: white;
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    height: 100vh; 
-    margin: 0; 
-    padding: 0; 
+    background-color: #FFFFFF;
+    color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
     overflow: auto;
 }
 
-#imagen-derecha {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin-left: 20px;
-    margin-top: 20px;
-    border-radius: 50%;
-    width: 100px; 
-    height: 100px; 
-}
-
 button {
-    background-color: #FF0000; 
-    border: none; 
-    color: #FFFFFF; 
-    padding: 15px 32px; 
+    background-color: #FF0000;
+    border: none;
+    color: #FFFFFF;
+    padding: 15px 32px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px; 
+    font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
-    border-radius: 4px; 
-    font-family: 'Courier New', Courier, monospace;
-
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: black; 
+    background-color: #FFA500;
 }
 
 .container {
     width: 800px;
     max-height: 100vh;
-    margin: auto; 
+    margin: auto;
     padding: 20px;
-    background-color: rgba(0, 0, 0, 0.7); 
+    background-color: rgba(0, 0, 0, 0.7);
     box-sizing: border-box;
     font-size: 0.9em;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.form-group input,.form-group select,.form-group textarea {
+.form-group input,
+.form-group select,
+.form-group textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     border: none;
-    border-radius: 15px; 
-    background-color: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    font-family: 'Courier New', Courier, monospace; 
+    border-radius: 15px;
+    background-color: #FFFFFF;
+    color: #000000;
+    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .form-group button[type="submit"] {
     width: 100%;
     padding: 10px;
     border: none;
-    border-radius: 50px; 
-    background-color: #1abc9c; 
-    color: #fff;
+    border-radius: 50px;
+    background-color: #FF0000;
+    color: #FFFFFF;
     cursor: pointer;
-    transition: background-color 0.3s ease; 
+    transition: background-color 0.3s ease;
     margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .form-group button[type="submit"]:hover {
-    background-color: #16a085; 
+    background-color: #FFA500;
 }
 
 .table {
@@ -95,7 +81,8 @@ button:hover {
     border-collapse: collapse;
 }
 
-.table th,.table td {
+.table th,
+.table td {
     padding: 10px;
     border: 1px solid #333;
     text-align: left;
@@ -103,7 +90,7 @@ button:hover {
 
 .table th {
     background-color: #333;
-    color: #fff;
+    color: #FFFFFF;
 }
 
 .table td {
@@ -120,15 +107,15 @@ button:hover {
     padding: 10px;
     border-radius: 5px;
     background-color: #333;
-    color: #fff;
+    color: #FFFFFF;
 }
 
 .alert-success {
-    background-color: #2ecc71; 
+    background-color: #2ecc71;
 }
 
 .alert-danger {
-    background-color: #e74c3c; 
+    background-color: #e74c3c;
 }
 
 .container > * {
@@ -137,4 +124,37 @@ button:hover {
 
 #editContainer {
     display: block;
+}
+
+a {
+    color: #FF0000;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #FFA500;
+    text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 28px;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+p {
+    font-size: 16px;
+}
+
+.small-text {
+    font-size: 14px;
 }

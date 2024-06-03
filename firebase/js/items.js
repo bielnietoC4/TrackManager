@@ -30,6 +30,11 @@ function loadCompetición() {
 
   db.collection("Competición").onSnapshot((querySnapshot) => {
     let rowsHtml = `
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
       <tr>
         <th>Logo</th>
         <th>Nombre</th>
