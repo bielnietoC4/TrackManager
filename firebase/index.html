@@ -1,6 +1,5 @@
 <!doctype html>
 <html>
-
 <head>
 	<meta charset="utf-8">
 	<title>TrackManager</title>
@@ -11,13 +10,12 @@
 	<script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/4.12.1/firebase-firestore.js"></script>
 </head>
-
 <body>
+	<div id="alert" class="alert" style="display: none;"></div>
 	<div class="container p-5">
 		<div class="row">
 			<img src="./imatges/logo track manager.png" alt="Logo Track Manager" style="height: auto; width: 120px;">
 			<div class="col-8 offset-2" id="loginForm">
-				
 				<form>
 					<div class="form-group row">
 						<label for="title" class="col-4 col-form-label" style="color: white;">Correu electrònic:</label>
@@ -33,14 +31,12 @@
 					</div>
 					<div class="form-group row">
 						<div class="offset-4 col-8">
-							<button type="button" id="newUser" class="btn btn-outline-primary float-right">Registrar un
-								nou usuari</button>
+							<button type="button" id="newUser" class="btn btn-outline-primary float-right">Registrar un nou usuari</button>
 							<button type="button" id="login" class="btn btn-default float-right mr-3">Entrar</button>
 						</div>
 					</div>
 				</form>
 			</div>
-
 			<div class="col-8 offset-2" id="signupForm" style="display: none;">
 				<form>
 					<div class="form-group row">
@@ -68,12 +64,10 @@
 					</div>
 				</form>
 			</div>
-
 			<div class="col-8 offset-2" id="buttonsContainer" style="display: none;">
 				<button type="button" id="addCompetición" class="btn btn-default">Agregar Competición</button>
 				<button type="button" id="searchCompetición" class="btn btn-default">Buscar Competición</button>
-			  </div>
-
+			</div>
 			<div class="col-8 offset-2" id="CompeticiónForm" style="display: none;">
 				<form>
 				  <div class="form-group row">
@@ -129,37 +123,43 @@
 					</div>
 				  </div>
 				</form>
-			  </div>
-
-			<div class="col-2">
-				<div id="alert" role="alert"></div>
+			</div>
+			<div class="col-8 offset-2" id="searchForm" style="display: none;">
+				<form>
+				  <div class="form-group row">
+					<label for="searchNombre" class="col-4 col-form-label" style="color: white;">Nombre de la competición:</label>
+					<div class="col-8">
+					  <input type="text" class="form-control" id="searchNombre">
+					</div>
+				  </div>
+				  <div class="form-group row">
+					<div class="offset-4 col-8">
+					  <button type="button" id="buscar" class="btn btn-default float-right">Buscar</button>
+					</div>
+				  </div>
+				</form>
 			</div>
 		</div>
 		<div class="table-responsive">
 			<table class="table table-hover" id="listCompetición" style="display: none;">
 			</table>
 		</div>
-		<div id="editContainer" style="display: none;">
-			<form>
-			  <label for="id">Nombre de la competición:</label>
-			  <input type="text" id="elementId" name="elementId" readonly><br><br>
-			  <label for="categoria">Categoria:</label>
-			  <select id="categoria">
-				<option>Selecciona</option>
-				<option value="Coches">Coches</option>
-				<option value="Motos">Motos</option>
-			</select><br><br>
-			  <label for="circuitos">Circuitos:</label>
-			  <input type="text" id="circuitos" name="circuitos"><br><br>
-			  <label for="equipos">Equipos:</label>
-			  <input type="text" id="equipos" name="equipos"><br><br>
-			  <label for="data_inici">Fecha de inicio:</label>
-			  <input type="date" id="data_inici" name="data_inici"><br><br>
-			  <label for="data_fi">Fecha de fin:</label>
-			  <input type="date" id="data_fi" name="data_fi"><br><br>
-			  <button class="btn btn-primary" onclick="updateItem()">Actualizar</button>
-			</form>
-		  </div>
+		<div id="resultsContainer" style="display: none;">
+			<table class="table table-hover" id="resultsTable">
+			  <thead>
+				<tr>
+				  <th>Logo</th>
+				  <th>Nombre</th>
+				  <th>Categoria</th>
+				  <th>Circuitos</th>
+				  <th>Equipos</th>
+				  <th>Fecha de inicio</th>
+				  <th>Fecha de fin</th>
+				</tr>
+			  </thead>
+			  <tbody>
+			  </tbody>
+			</table>
 		</div>
 	</div>
 </body>
@@ -167,6 +167,5 @@
 <script language="javascript" src="js/firestore.js"></script>
 <script language="javascript" src="js/storage.js"></script>
 <script language="javascript" src="js/items.js"></script>
-<script language="javascript" src="js/scripts.js" ></script>
-
+<script language="javascript" src="js/scripts.js"></script>
 </html>

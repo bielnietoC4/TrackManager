@@ -1,12 +1,17 @@
 let imatgeModificada = false;
 
 function showAlert(text, type) {
-  document.getElementById("alert").innerText = text;
-  document.getElementById("alert").className = "alert " + type;
-  document.getElementById("alert").style.display = "block";
-  window.setTimeout(function () {
-    document.getElementById("alert").style.display = "none";
-  }, 2000);
+  const alertElement = document.getElementById("alert");
+  if (alertElement) {
+    alertElement.innerText = text;
+    alertElement.className = "alert " + type;
+    alertElement.style.display = "block";
+    window.setTimeout(function () {
+      alertElement.style.display = "none";
+    }, 2000);
+  } else {
+    console.error("Elemento de alerta no encontrado en el DOM");
+  }
 }
 
 window.addEventListener("load", function () {
@@ -66,11 +71,91 @@ document.getElementById("signup").addEventListener("click", function () {
 document.getElementById("addCompetición").addEventListener("click", function () {
   document.getElementById("CompeticiónForm").style.display = "block";
   document.getElementById("listCompetición").style.display = "block";
+  document.getElementById("searchForm").style.display = "none";
+  document.getElementById("resultsContainer").style.display = "none";
 });
 
 document.getElementById("searchCompetición").addEventListener("click", function () {
-    document.getElementById("listCompetición").style.display = "block";
+    document.getElementById("addCompetición").style.display = "block";
+    document.getElementById("CompeticiónForm").style.display = "none";
+    document.getElementById("searchForm").style.display = "block";
+    document.getElementById("resultsContainer").style.display = "none";
+     // Ocultar el botón addCompetición
   });
+
+document.getElementById("buscar").addEventListener("click", function () {
+  const searchNombre = document.getElementById("searchNombre").value;
+  searchCompetición(searchNombre);
+});
+
+function searchCompetición(id) {
+    const resultsTableBody = document.getElementById("resultsTable").getElementsByTagName('tbody')[0];
+    resultsTableBody.innerHTML = ''; // Limpiar resultados anteriores
+  
+    db.collection("Competición")
+      .doc(id) // Buscar el documento con el ID especificado
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          // Si se encuentra el documento, mostrar los datos en la tabla
+          const data = doc.data();
+          const row = resultsTableBody.insertRow();
+          row.insertCell(0).innerHTML = `<img src="${data.logo_url}" width="50" height="50">`;
+          row.insertCell(1).textContent = doc.id;
+          row.insertCell(2).textContent = data.categoria;
+          row.insertCell(3).textContent = data.circuitos;
+          row.insertCell(4).textContent = data.equipos;
+          row.insertCell(5).textContent = data.data_inici;
+          row.insertCell(6).textContent = data.data_fi;
+  
+          document.getElementById("resultsContainer").style.display = "block";
+        } else {
+          // Si no se encuentra el documento, mostrar mensaje de documento no encontrado
+          showAlert("Documento no encontrado", "alert-warning");
+        }
+      })
+      .catch((error) => {
+        console.error("Error al buscar la competición:", error);
+      });
+  }
+
+document.getElementById("buscar").addEventListener("click", function () {
+    const searchNombre = document.getElementById("searchNombre").value;
+    searchCompetición(searchNombre);
+  });
+  
+  function searchCompetición(nombre) {
+    const resultsTableBody = document.getElementById("resultsTable").getElementsByTagName('tbody')[0];
+    resultsTableBody.innerHTML = ''; // Limpiar resultados anteriores
+  
+    db.collection("Competición")
+      .where("nombre", "==", nombre)
+      .get()
+      .then((querySnapshot) => {
+        if (querySnapshot.empty) {
+          // Si no se encuentra ningún documento, mostrar mensaje de documento no encontrado
+          showAlert("Documento no encontrado", "alert-warning");
+        } else {
+          // Si se encuentran documentos, mostrar los resultados
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const row = resultsTableBody.insertRow();
+            row.insertCell(0).innerHTML = `<img src="${data.logo_url}" width="50" height="50">`;
+            row.insertCell(1).textContent = doc.id;
+            row.insertCell(2).textContent = data.categoria;
+            row.insertCell(3).textContent = data.circuitos;
+            row.insertCell(4).textContent = data.equipos;
+            row.insertCell(5).textContent = data.data_inici;
+            row.insertCell(6).textContent = data.data_fi;
+          });
+  
+          document.getElementById("resultsContainer").style.display = "block";
+        }
+      })
+      .catch((error) => {
+        console.error("Error al buscar la competición:", error);
+      });
+  }
 
 function clearInputs() {
   const inputs = document.querySelectorAll('input, select');
@@ -88,31 +173,32 @@ function clearInputs() {
 }
 
 document.getElementById("guardar").addEventListener("click", function () {
-    let id = document.getElementById("elementId").value;
-    let categoria = document.getElementById("categoria").value;
-    let circuitos = document.getElementById("circuitos").value;
-    let equipos = document.getElementById("equipos").value;
-    let data_inici = document.getElementById("data_inici").value;
-    let data_fi = document.getElementById("data_fi").value;
-    let logoFile = document.getElementById("logo").files[0];
-  
-    // Crear el documento con los datos
-    let doc = {
-      categoria: categoria,
-      circuitos: circuitos,
-      equipos: equipos,
-      data_inici: data_inici,
-      data_fi: data_fi,
-    };
-  
-    // Subir el archivo y agregar el documento
-    uploadFile(logoFile, id, doc);
-  });
+  let id = document.getElementById("elementId").value;
+  let categoria = document.getElementById("categoria").value;
+  let circuitos = document.getElementById("circuitos").value;
+  let equipos = document.getElementById("equipos").value;
+  let data_inici = document.getElementById("data_inici").value;
+  let data_fi = document.getElementById("data_fi").value;
+  let logoFile = document.getElementById("logo").files[0];
+
+  // Crear el documento con los datos
+  let doc = {
+    categoria: categoria,
+    circuitos: circuitos,
+    equipos: equipos,
+    data_inici: data_inici,
+    data_fi: data_fi,
+  };
+
+  // Subir el archivo y agregar el documento
+  uploadFile(logoFile, id, doc);
+});
 
 function uploadFile(logoFile, id, doc) {
   if (logoFile) {
     let storageRef = firebase.storage().ref();
-    let logoRef = storageRef.child(`/images/Competición/${id}`);
+    let logoRef = storageRef
+    .child(`/images/Competición/${id}`);
 
     logoRef.put(logoFile)
       .then(() => {
@@ -252,9 +338,3 @@ function editItem(id) {
     console.error("Error al obtener documento:", error);
   });
 }
-    
-
-    
-    
-    
-
