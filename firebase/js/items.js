@@ -1,10 +1,10 @@
-const Competición = db.collection("Competición");
-
-async function add(id, doc, logoFile) {
+async function add(id, doc) {
   try {
-    // Subir el archivo al almacenamiento de Firebase
-     uploadFile(logoFile, id);
-    
+    // Verificar que 'doc' no sea undefined
+    if (!doc || typeof doc !== 'object') {
+      throw new Error("Documento inválido");
+    }
+
     // Añadir el documento a la colección en Firestore
     await db.collection("Competición").doc(id).set(doc);
     
@@ -16,7 +16,6 @@ async function add(id, doc, logoFile) {
     console.error("Error al intentar crear el elemento:", error);
   }
 }
-
 
 function loadCompetición() {
   const tableResponsive = document.querySelector(".table-responsive");
@@ -30,11 +29,6 @@ function loadCompetición() {
 
   db.collection("Competición").onSnapshot((querySnapshot) => {
     let rowsHtml = `
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
       <tr>
         <th>Logo</th>
         <th>Nombre</th>
@@ -72,45 +66,18 @@ function loadCompetición() {
   });
 }
 
+async function updateItem(id, doc) {
+  try {
+    if (!doc || typeof doc !== 'object') {
+      throw new Error("Documento inválido");
+    }
 
+    // Actualizar el documento en Firestore
+    await db.collection("Competición").doc(id).update(doc);
 
-
-function updateItem(id, doc, imatgeModificada) {
-
-  if (imatgeModificada) {
-    let logoFile = doc.logo_url;
-
-    // No es necesario obtener el nombre del archivo si ya se tiene la URL
-
-    let storageRef = firebase.storage().ref();
-    let logoRef = storageRef.child(`/images/Competición/${id}`);
-
-    fetch(logoFile)
-      .then(response => response.blob())
-      .then(blob => {
-        logoRef.put(blob)
-          .then(() => {
-            logoRef.getDownloadURL()
-              .then((url) => {
-                // Actualizar el campo 'logo_url' en el documento
-                doc.logo_url = url;
-                // Llamar a la función de actualización en Firestore
-                updateDoc(id, doc);
-              })
-              .catch((error) => {
-                console.error("Error al intentar obtener la URL del logo:", error);
-              });
-          })
-          .catch((error) => {
-            console.error("Error al intentar subir el logo:", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Error al obtener el archivo del logo:", error);
-      });
-  } else {
-    // Si no se modificó la imagen, llamar directamente a la función de actualización en Firestore
-    updateDoc(id, doc);
+    console.log("Elemento actualizado correctamente");
+  } catch (error) {
+    console.error("Error al intentar actualizar el elemento:", error);
   }
 }
 
